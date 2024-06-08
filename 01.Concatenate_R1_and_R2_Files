@@ -1,0 +1,73 @@
+### Description
+In this first step, we will concatenate all R1 sequence files into a single file and all R2 sequence files into another single file. This process is essential to simplify subsequent analysis by ensuring 
+we have two consolidated files for the read sequences.
+
+### Commands and Code
+Below are the necessary commands to concatenate the files using the command line in the cluster. Make sure you are in the directory where you desire that the sequence files will be located before executing 
+these commands.
+
+### 01. Create a work directory
+Most likely, Ale or someone else has already uploaded your sequences to the cluster, but you cannot work on them there. Therefore, the first step is to create a working directory within your user directory 
+named after the project where all the sequence analysis will take place.
+
+```
+cd /mnt/Cromosoma/mavila/lcarrillo/
+mkdir capturas_salmonella_myco
+cd capturas_salmonella_myco
+pwd
+# Output: /mnt/Cromosoma/mavila/lcarrillo/capturas_salmonella_myco
+```
+
+### 02. Copying files
+Once you are inside your project directory, you need to copy the gzipped sequence files to this working directory. To do this, ask Ale or the person who uploaded them for the path where they are located. 
+Once you have it, you can copy them without subfolders using the following command:
+NOTE1: Remember to change both the source and destination paths.
+
+```
+screen # This will open a "new window"
+for file in $(find /mnt/Cromosoma/mavila/acastillo/WISC_LAURA2024 -type f -name "*gz*"); do
+    cp $file .
+done
+```
+
+Here find command searches for all files (-type f) in the specified directory and its subdirectories that match the pattern *gz*.
+In cp $file . The cp command copies each found file to the current directory (.).
+
+NOTE2: If you have only a few sequences, you can wait inside the screen until the copying is done. However, if you have many sequences (e.g., around 20 or more), it's better to detach the screen with the 
+command Ctrl+a d to avoid interrupting the file copying process.
+
+Sure, here's the translation with improved grammar:
+
+Once all the sequences have been copied, you can close the screen with `Ctrl+d`. If you had to wait a few hours for the copying to complete and want to return to the screen, you can do so with `screen -r`. 
+If the copying has already finished, you can close it with `Ctrl+d`.
+
+### 03. Concatenate R1 files
+Each individual has four R1 files and four R2 files:
+
+```
+ls
+021-H238-WISC_S1_L001_R1_001.fastq.gz
+021-H238-WISC_S1_L001_R2_001.fastq.gz
+021-H238-WISC_S1_L002_R1_001.fastq.gz
+021-H238-WISC_S1_L002_R2_001.fastq.gz
+021-H238-WISC_S1_L003_R1_001.fastq.gz
+021-H238-WISC_S1_L003_R2_001.fastq.gz
+021-H238-WISC_S1_L004_R1_001.fastq.gz
+021-H238-WISC_S1_L004_R2_001.fastq.gz
+041-H302-WISC_S2_L001_R1_001.fastq.gz
+041-H302-WISC_S2_L001_R2_001.fastq.gz
+041-H302-WISC_S2_L002_R1_001.fastq.gz
+041-H302-WISC_S2_L002_R2_001.fastq.gz
+041-H302-WISC_S2_L003_R1_001.fastq.gz
+041-H302-WISC_S2_L003_R2_001.fastq.gz
+041-H302-WISC_S2_L004_R1_001.fastq.gz
+041-H302-WISC_S2_L004_R2_001.fastq.gz
+```
+
+Therefore, each individual's R1 files should be concatenated as follows:
+
+```
+zcat 021-H238-WISC_S1_L001_R1_001.fastq.gz 021-H238-WISC_S1_L002_R1_001.fastq.gz 021-H238-WISC_S1_L003_R1_001.fastq.gz 021-H238-WISC_S1_L004_R1_001.fastq.gz > 021-H238-WISC_S1_L001-4_R1_001.fastq
+```
+
+The same should be done for each individual's R2 files.
