@@ -1,0 +1,109 @@
+### 22.1 Diversity of Streptococcus pneumoniae
+If you are working with *Streptococcus pneumoniae*, you’ve likely realized that it is as complex a pathogen to study as *Salmonella*. 
+
+*S. pneumoniae* can be classified in various ways. You can classify it by serovars (referred to as serotypes in this species), where each serotype includes different substrains. Alternatively, it 
+can be classified into `GPSC` (Global Pneumococcal Sequence Clusters), and there are also *Streptococcus* strains without capsular groups. 
+
+There are many platforms with databases dedicated to this pathogen, and due to its diversity, existing phylogenies vary depending on the focus of the analysis. 
+
+In our laboratory, when working with shotgun sequencing, it is best to use GPSC classification, as most shotgun libraries have been categorized into these capsular groups. Additionally, if you 
+identified the pathogen through VF (virulence factor) analysis, it’s highly likely that you also detected capsular genes. You can verify this in tools like Artemis or IGV. 
+
+On the GPSC website, you’ll find that there are over 70 GPSC groups, and by exploring the site, you can access hundreds of genomes available for each group, which can be used to build phylogenies. In fact, within each GPSC group, you can view phylogenies constructed with modern genomes.
+
+```
+#Website
+https://www.pneumogen.net/gps/#/resources
+```
+
+Therefore, the first step to determining which group to focus on is identifying the GPSC group your ancient genome belongs to. 
+
+There are several ways to do this, including tools like *Seroba* or the *Pathogen Informatics Training* pipeline for local machine analysis, or PubMLST for online analysis. 
+```
+https://sanger-pathogens.github.io/seroba/
+https://github.com/sanger-pathogens/pathogen-informatics-training?tab=readme-ov-file#usage
+https://pubmlst.org/
+```
+
+Here, I’ll guide you through the steps to perform this analysis using the PubMLST platform. 
+
+### 22.2 Call variants
+Go to your work directory and load the modules
+All you need to know about this programms are in previous pages in this github.
+```
+cd /panfs/pan5/mavila/lcarrillo/Conchita-concatenado/Mapping_hg38/Unmapped/Streptococcus_pneumoniae/ #Modify your path
+module load samtools/1.20
+module load bcftools/1.17 
+module load seqtk/1.2-r94
+```
+Generate a pileup of aligned reads against the reference genome
+```
+bcftools mpileup -Ou -f /mnt/Cromosoma/mavila/lcarrillo/genomes_bacteria/Streptococcus_pneumoniae.fna E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.bam | bcftools call -mv -Ov -o E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.vcf
+#Change your path of the reference genome
+#Change the name of your bamfile
+#Change the name of your vcf output
+```
+`-mv`: outputs multi-variant calls.
+`-Ov`: produces an uncompressed VCF file as output.
+
+```
+#Output:
+Note: none of --samples-file, --ploidy or --ploidy-file given, assuming all sites are diploid
+[mpileup] 1 samples in 1 input files
+[mpileup] maximum number of reads per input file set to -d 250
+```
+
+```
+ls -lthr
+```
+
+### 22.3 Compresses the VCF file into .vcf.gz format
+Compression to the .gz format for VCF files is NOT done with the typical gzip command. Since VCF files have a specific format, we need to use bgzip instead.
+`bgzip` is NOT available on the cluster, so you’ll need to install the program on your local computer.
+
+Here are the instructions to do so:
+```
+https://pypi.org/project/bgzip/
+```
+Once you have installed the program on your terminal, download your VCF file to your local computer and compress it using `bgzip`.
+```
+bgzip E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.vcf
+ls -lthr
+```
+Upload the compressed vcf.gz file to your working directory on the cluster.
+```
+ls
+```
+```
+#Output:
+E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.bam
+E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.vcf
+E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.vcf.gz
+```
+
+### 22.4 Index the compressed VCF file
+Reload the necessary modules.
+```
+module load samtools/1.20
+module load bcftools/1.17 
+module load seqtk/1.2-r94
+```
+Create an index for the compressed VCF file (.vcf.gz), allowing quick queries for specific genomic positions.
+```
+bcftools index E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.vcf.gz
+ls -ltrh
+```
+
+### 22.5 Generate the consensus sequence
+Combine the reference genome and detected variants to produce a consensus sequence. This sequence reflects the specific variations found in your sample.
+```
+bcftools consensus E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.vcf.gz -f /mnt/Cromosoma/mavila/lcarrillo/genomes_bacteria/Streptococcus_pneumoniae.fna > E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.consensus.fastq
+ls -ltrh
+```
+Change the extension, because the resulting file (output.consensus.fastq) contains the consensus sequence 
+
+```
+head E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.consensus.fastq
+mv E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.consensus.fastq E199-shotgun-concat_L001_R1-2_001.fastq.concat.collapsed.unmapped.fastq.bwa.sort.rmdup.uniq.consensus.fasta
+```
+
