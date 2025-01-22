@@ -1,4 +1,6 @@
-'''
+
+Script for genotyping human aDNA using a processed BAM file and the MEGA SNP panel. The script generates a missing data report and a SNP count from the aDNA genotypes. It then integrates the ancient dataset with a human reference panel from the 1000 Genomes Project and conducts a Principal Component Analysis (PCA).
+```
 #!/bin/bash
 
 # Job settings for SGE
@@ -144,4 +146,4 @@ poplistname:	$REFERENCE_NAME.poplist.txt
 lsqproject:	YES" > $REFERENCE_NAME.HSJN_CON_genotypes.pca.par.txt
 
 smartpca -p $REFERENCE_NAME.HSJN_CON_genotypes.pca.par.txt > $REFERENCE_NAME.HSJN_CON_genotypes.lsqproject.out
-'''
+```
