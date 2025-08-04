@@ -1,4 +1,4 @@
-# Alignment with MALT
+# MALT aligment
 
 MALT, an acronym for MEGAN alignment tool, is a sequence alignment and analysis tool designed for processing high-throughput sequencing data, especially in the context of metagenomics
 
@@ -10,7 +10,7 @@ Herbig, A., Maixner, F., Bos, K. I., Zink, A., Krause, J., & Huson, D. H. (2016)
 
 ## 1.1 Convert BZ2 to GZ2
 
-```bash for file in $(find /mnt/Cromosoma/mavila/falvarez/MALT/Viruses -type f -name "*bz2"); do name="${file%.bz2}" bzcat "$file" | gzip > "$name.gz" done ``` </pre>
+```bash for file in $(find your/path -type f -name "*bz2"); do name="${file%.bz2}" bzcat "$file" | gzip > "$name.gz" done ``` </pre>
 
 
 ## 2.2 Create the following script
