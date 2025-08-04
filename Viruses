@@ -5,11 +5,13 @@ Herbig, A., Maixner, F., Bos, K. I., Zink, A., Krause, J., & Huson, D. H. (2016)
 
 ## 1.1 Convert BZ2 to GZ2
 
-<pre> ```bash for file in $(find /mnt/Cromosoma/mavila/falvarez/MALT/Viruses -type f -name "*bz2"); do name="${file%.bz2}" bzcat "$file" | gzip > "$name.gz" done ``` </pre>
+```bash for file in $(find /mnt/Cromosoma/mavila/falvarez/MALT/Viruses -type f -name "*bz2"); do name="${file%.bz2}" bzcat "$file" | gzip > "$name.gz" done ``` </pre>
 
 
 ## 2.2 Create the following script
-<pre> ``` nano MALT.sh
+```bash  
+
+nano MALT.sh
 
 #!/bin/bash
 #
@@ -67,3 +69,5 @@ for sub_dir in "$input_dir"/*/; do
     # Back to original directory
     cd - > /dev/null
 done
+
+```` ``` ````
