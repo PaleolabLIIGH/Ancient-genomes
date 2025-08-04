@@ -83,6 +83,7 @@ done
 # inFile file.fastq.collapsed.unmapped.fastq.gz: Specifies the input file.
 
 
+```
 ## 2.3 Download the 'rma6' output files from MALT and open them in Megan6 in your local machine.
 
 MEGAN6 is an algorithm that classifies sequences taxonomically based on the lowest common ancestor of the taxa with which the sequence has the best alignments. This provides a more accurate and specific classification through multiple comparisons with reference databases.
