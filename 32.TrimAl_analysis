@@ -1,3 +1,71 @@
-# 32.1 Learn about TrimAl
+# TrimAl
+## 32.1 Learn about TrimAl
 To learn more about trimAl visit: https://trimal.readthedocs.io/
 
+```bash
+#!/bin/bash
+#
+#Created by Itzy Perez-Alvarado
+#SBATCH --job-name=trimAl
+#SBATCH --output=%x.out
+#SBATCH --error=%x.err
+#SBATCH --mail-type=END
+#SBATCH --mail-user=danitzy2004@gmail.com
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=17
+#SBATCH --mem-per-cpu=5G
+#SBATCH --chdir=.
+
+# Set number of OpenMP threads
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+# Load modules environment
+. /etc/profile.d/modules.sh
+
+# Load trimAl module
+module load trimal/1.2
+
+# Input alignment file
+INPUT="/mnt/data/mavila/ipereza/Porphyromonas_final/mafft/90/snpAlignment_porphyromonas90.fas_mafft.fas"
+
+# Extraer el nombre base del archivo (sin extensión y sin la ruta)
+BASENAME=$(basename "$INPUT" | sed 's/\.[^.]*$//')
+
+# List of trimming methods
+METHODS=("automated1" "gappyout" "noallgaps" "nogaps" "strict" "strictplus" "gt_cons")
+
+echo "Starting trimAl processing..."
+echo "------------------------------------------"
+echo "Input file: $INPUT"
+echo "Base name: $BASENAME"
+echo "------------------------------------------"
+
+for OPT in "${METHODS[@]}"; do
+
+    echo "Processing method: $OPT"
+
+    # Create output directory if it does not exist
+    mkdir -p "$OPT"
+
+    OUTPUT="$OPT/${BASENAME}_${OPT}.fas"
+
+    case $OPT in
+        "gt_cons")
+            # Special combined case: gap threshold + consensus filter
+            trimal -in "$INPUT" -out "$OUTPUT" -gt 0.8 -cons 60
+            ;;
+        *)
+            # Standard trimAl predefined methods
+            trimal -in "$INPUT" -out "$OUTPUT" -"$OPT"
+            ;;
+    esac
+
+    echo "Finished method: $OPT"
+    echo "------------------------------------------"
+
+done
+
+echo "All trimming methods completed."
+echo "Output files saved in respective method directories with base name: $BASENAME"
+```
